@@ -1,10 +1,12 @@
+import os
 import torch
+import base64
 from PIL import Image
 import torchvision.transforms as transforms
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import Informationdrug
+from .models import Informationdrug, UrlImgUser
 from .serializers import Informationdrug_Serializer
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import default_storage
@@ -38,7 +40,18 @@ def classify_drug(request):
 
     return Response(response_data, status=status.HTTP_200_OK)
 
-import os
+def save_image(image_file):
+    # Lưu file ảnh vào default storage
+    image_name = default_storage.save(image_file.name, ContentFile(image_file.read()))
+    # Tạo URL cho ảnh đã lưu
+    image_url = default_storage.url(image_name)
+    
+    # Lưu URL vào bảng dữ liệu UrlImgUser
+    # url_img_user = UrlImgUser.objects.create(imgUser=image_url)
+    # url_img_user.save()
+
+    return image_url
+
 def detect_drug(image):
     model_path = os.path.join(os.path.dirname(__file__), 'ResNet18.pth')
     resnet = torch.load(model_path, map_location=torch.device('cpu'))
@@ -64,9 +77,3 @@ def detect_drug(image):
                'Amlodipin', 'Apha-Bevagyl', 'Arcalion']
     drug_name = classes[predicted_idx]
     return drug_name
-
-def save_image(image_file):
-    # Lưu trữ file ảnh vào thư mục media
-    file_name = default_storage.save(image_file.name, ContentFile(image_file.read()))
-    # Trả về URL của file ảnh
-    return default_storage.url(file_name)

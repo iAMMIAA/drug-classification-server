@@ -17,3 +17,11 @@ class Informationdrug(models.Model):
     class Meta:
         managed = False
         db_table = 'informationdrug'
+
+
+class UrlImgUser(models.Model):
+    id = models.AutoField(primary_key=True)
+    imgUser = models.TextField(null=True)
+
+    class Meta:
+        db_table = 'urlImgUser'
