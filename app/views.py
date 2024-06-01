@@ -19,7 +19,7 @@ def classify_drug(request):
             return Response({'error': 'No image provided'}, status=status.HTTP_400_BAD_REQUEST)
 
     image_file = request.FILES['image']
-    image_url = save_image(image_file)
+    # image_url = save_image(image_file)
 
     try:
         drug_name = detect_drug(image_file)
@@ -34,23 +34,23 @@ def classify_drug(request):
     serializer = Informationdrug_Serializer(drug_info) # Serialize thông tin thuốc
     
     response_data = { # Trả về thông tin thuốc và ảnh gốc
-        'drug_info': serializer.data,
-        'image': image_url
+        'drug_info': serializer.data
+        # 'image': image_url
     }
 
     return Response(response_data, status=status.HTTP_200_OK)
 
-def save_image(image_file):
-    # Lưu file ảnh vào default storage
-    image_name = default_storage.save(image_file.name, ContentFile(image_file.read()))
-    # Tạo URL cho ảnh đã lưu
-    image_url = default_storage.url(image_name)
+# def save_image(image_file):
+#     # Lưu file ảnh vào default storage
+#     image_name = default_storage.save(image_file.name, ContentFile(image_file.read()))
+#     # Tạo URL cho ảnh đã lưu
+#     image_url = default_storage.url(image_name)
     
-    # Lưu URL vào bảng dữ liệu UrlImgUser
-    # url_img_user = UrlImgUser.objects.create(imgUser=image_url)
-    # url_img_user.save()
+#     # Lưu URL vào bảng dữ liệu UrlImgUser
+#     # url_img_user = UrlImgUser.objects.create(imgUser=image_url)
+#     # url_img_user.save()
 
-    return image_url
+#     return image_url
 
 def detect_drug(image):
     model_path = os.path.join(os.path.dirname(__file__), 'ResNet18.pth')
